@@ -31,6 +31,13 @@ string trimText(const string& s) {
     return s.substr(start, end - start + 1);
 }
 
+string toLowerText(string s) {
+    for (int i = 0; i < (int)s.size(); i++) {
+        if (s[i] >= 'A' && s[i] <= 'Z') s[i] = char(s[i] - 'A' + 'a');
+    }
+    return s;
+}
+
 int getInt(const string& prompt) {
     int v;
     while (true) {
@@ -89,7 +96,6 @@ void registerAppliance(Appliance arr[], int& count) {
 
     Appliance a;
     a.name = getNonEmptyLine("Name: ");
-
     do { a.watts = getDouble("Watts (>0): "); } while (a.watts <= 0);
     do { a.hours = getDouble("Hours/day (0-24): "); } while (a.hours < 0 || a.hours > 24);
 
@@ -99,7 +105,6 @@ void registerAppliance(Appliance arr[], int& count) {
     cout << "Appliance registered (in memory).\n";
 }
 
-// -------- Part 4 addition --------
 void viewAppliances(const Appliance arr[], int count) {
     if (count == 0) {
         cout << "No appliances.\n";
@@ -123,6 +128,31 @@ void viewAppliances(const Appliance arr[], int count) {
              << "\n";
     }
 }
+
+// -------- Part 5 addition --------
+void searchAppliances(const Appliance arr[], int count) {
+    if (count == 0) {
+        cout << "No appliances.\n";
+        return;
+    }
+
+    string q = toLowerText(getNonEmptyLine("Search name: "));
+    bool found = false;
+
+    cout << fixed << setprecision(2);
+    for (int i = 0; i < count; i++) {
+        string nm = toLowerText(arr[i].name);
+        if (nm.find(q) != string::npos) {
+            cout << "- " << arr[i].name
+                 << " | " << arr[i].watts << " W"
+                 << " | " << arr[i].hours << " hrs"
+                 << " | " << kwhPerDay(arr[i]) << " kWh/day\n";
+            found = true;
+        }
+    }
+
+    if (!found) cout << "No match.\n";
+}
 // --------------------------------
 
 int main() {
@@ -143,13 +173,13 @@ int main() {
             viewAppliances(appliances, count);
         }
         else if (choice == 3) {
-            cout << "[Part 4] Search appliance (coming in Part 5)\n";
+            searchAppliances(appliances, count);
         }
         else if (choice == 4) {
-            cout << "[Part 4] Billing (coming in Part 8)\n";
+            cout << "[Part 5] Billing (coming in Part 8)\n";
         }
         else if (choice == 5) {
-            cout << "[Part 4] Save to file (coming in Part 6)\n";
+            cout << "[Part 5] Save to file (coming in Part 6)\n";
         }
         else if (choice == 6) {
             cout << "Goodbye!\n";
