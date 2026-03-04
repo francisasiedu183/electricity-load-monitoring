@@ -154,7 +154,6 @@ void searchAppliances(const Appliance arr[], int count) {
     if (!found) cout << "No match.\n";
 }
 
-// -------- Part 6 addition --------
 void saveAppliancesToFile(const Appliance arr[], int count) {
     ofstream out(APPLIANCES_FILE.c_str());
     if (!out.is_open()) {
@@ -169,11 +168,51 @@ void saveAppliancesToFile(const Appliance arr[], int count) {
     out.close();
     cout << "Saved to " << APPLIANCES_FILE << ".\n";
 }
-// --------------------------------
+
+// -------- Part 7 addition: load from file --------
+void loadAppliancesFromFile(Appliance arr[], int& count) {
+    count = 0;
+    ifstream in(APPLIANCES_FILE.c_str());
+    if (!in.is_open()) return;
+
+    string line;
+    while (getline(in, line)) {
+        line = trimText(line);
+        if (line.empty()) continue;
+
+        int p1 = (int)line.find('|');
+        int p2 = (p1 == -1) ? -1 : (int)line.find('|', p1 + 1);
+        if (p1 == -1 || p2 == -1) continue;
+
+        string name = trimText(line.substr(0, p1));
+        string wStr = trimText(line.substr(p1 + 1, p2 - p1 - 1));
+        string hStr = trimText(line.substr(p2 + 1));
+
+        if (name.empty()) continue;
+
+        double w = 0.0, h = 0.0;
+        try { w = stod(wStr); h = stod(hStr); }
+        catch (...) { continue; }
+
+        if (w <= 0 || h < 0 || h > 24) continue;
+
+        if (count < MAX_APPLIANCES) {
+            arr[count].name = name;
+            arr[count].watts = w;
+            arr[count].hours = h;
+            count++;
+        }
+    }
+
+    in.close();
+}
+// -----------------------------------------------
 
 int main() {
     Appliance appliances[MAX_APPLIANCES];
     int count = 0;
+
+    loadAppliancesFromFile(appliances, count);
 
     cout << "Electrical Load Monitoring & Billing System\n";
     cout << "Loaded appliances: " << count << "\n";
@@ -192,12 +231,13 @@ int main() {
             searchAppliances(appliances, count);
         }
         else if (choice == 4) {
-            cout << "[Part 6] Billing (coming in Part 8)\n";
+            cout << "[Part 7] Billing (coming in Part 8)\n";
         }
         else if (choice == 5) {
             saveAppliancesToFile(appliances, count);
         }
         else if (choice == 6) {
+            saveAppliancesToFile(appliances, count);
             cout << "Goodbye!\n";
             break;
         }
