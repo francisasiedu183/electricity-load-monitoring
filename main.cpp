@@ -103,7 +103,7 @@ void registerAppliance(Appliance arr[], int& count) {
     arr[count] = a;
     count++;
 
-    cout << "Appliance registered (in memory).\n";
+    cout << "Appliance registered.\n";
 }
 
 void viewAppliances(const Appliance arr[], int count) {
@@ -169,7 +169,6 @@ void saveAppliancesToFile(const Appliance arr[], int count) {
     cout << "Saved to " << APPLIANCES_FILE << ".\n";
 }
 
-// -------- Part 7 addition: load from file --------
 void loadAppliancesFromFile(Appliance arr[], int& count) {
     count = 0;
     ifstream in(APPLIANCES_FILE.c_str());
@@ -187,7 +186,6 @@ void loadAppliancesFromFile(Appliance arr[], int& count) {
         string name = trimText(line.substr(0, p1));
         string wStr = trimText(line.substr(p1 + 1, p2 - p1 - 1));
         string hStr = trimText(line.substr(p2 + 1));
-
         if (name.empty()) continue;
 
         double w = 0.0, h = 0.0;
@@ -206,7 +204,64 @@ void loadAppliancesFromFile(Appliance arr[], int& count) {
 
     in.close();
 }
-// -----------------------------------------------
+
+// -------- Part 8 additions: billing + append billing summary --------
+void appendBillingSummary(double tariff, int count,
+                          double dayKwh, double dayCost,
+                          double monthKwh, double monthCost) {
+    ofstream out(BILLING_FILE.c_str(), ios::app);
+    if (!out.is_open()) {
+        cout << "Error appending " << BILLING_FILE << "\n";
+        return;
+    }
+
+    out << "================ BILLING SUMMARY ================\n";
+    out << fixed << setprecision(2);
+    out << "Tariff: " << tariff << " per kWh\n";
+    out << "Appliances count: " << count << "\n";
+    out << "Total daily energy: " << dayKwh << " kWh\n";
+    out << "Total daily cost:  " << dayCost << "\n";
+    out << "Estimated 30-day energy: " << monthKwh << " kWh\n";
+    out << "Estimated 30-day cost:  " << monthCost << "\n";
+    out << "=================================================\n\n";
+
+    out.close();
+}
+
+void billingFlow(const Appliance arr[], int count) {
+    if (count == 0) {
+        cout << "No appliances. Add some first.\n";
+        return;
+    }
+
+    double tariff;
+    do { tariff = getDouble("Tariff per kWh (>0): "); } while (tariff <= 0);
+
+    double dayKwh   = totalKwhPerDay(arr, count);
+    double dayCost  = dayKwh * tariff;
+    double monthKwh = dayKwh * 30.0;
+    double monthCost = dayCost * 30.0;
+
+    cout << fixed << setprecision(2);
+    cout << "\nTariff: " << tariff << " per kWh\n";
+    cout << "Daily energy: " << dayKwh << " kWh\n";
+    cout << "Daily cost:   " << dayCost << "\n";
+    cout << "30-day energy: " << monthKwh << " kWh\n";
+    cout << "30-day cost:   " << monthCost << "\n";
+
+    cout << "Save summary to billing_summary.txt? (y/n): ";
+    char ch;
+    cin >> ch;
+    flushInput();
+
+    if (ch == 'y' || ch == 'Y') {
+        appendBillingSummary(tariff, count, dayKwh, dayCost, monthKwh, monthCost);
+        cout << "Billing summary saved.\n";
+    } else {
+        cout << "Not saved.\n";
+    }
+}
+// ------------------------------------------------------------------
 
 int main() {
     Appliance appliances[MAX_APPLIANCES];
@@ -223,6 +278,7 @@ int main() {
 
         if (choice == 1) {
             registerAppliance(appliances, count);
+            // You can save immediately later (Part 9 does it automatically on add/exit)
         }
         else if (choice == 2) {
             viewAppliances(appliances, count);
@@ -231,7 +287,7 @@ int main() {
             searchAppliances(appliances, count);
         }
         else if (choice == 4) {
-            cout << "[Part 7] Billing (coming in Part 8)\n";
+            billingFlow(appliances, count);
         }
         else if (choice == 5) {
             saveAppliancesToFile(appliances, count);
