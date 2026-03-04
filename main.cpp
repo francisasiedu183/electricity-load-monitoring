@@ -2,6 +2,7 @@
 #include <string>
 #include <iomanip>
 #include <limits>
+#include <fstream>
 
 using namespace std;
 
@@ -129,7 +130,6 @@ void viewAppliances(const Appliance arr[], int count) {
     }
 }
 
-// -------- Part 5 addition --------
 void searchAppliances(const Appliance arr[], int count) {
     if (count == 0) {
         cout << "No appliances.\n";
@@ -152,6 +152,22 @@ void searchAppliances(const Appliance arr[], int count) {
     }
 
     if (!found) cout << "No match.\n";
+}
+
+// -------- Part 6 addition --------
+void saveAppliancesToFile(const Appliance arr[], int count) {
+    ofstream out(APPLIANCES_FILE.c_str());
+    if (!out.is_open()) {
+        cout << "Error writing " << APPLIANCES_FILE << "\n";
+        return;
+    }
+
+    for (int i = 0; i < count; i++) {
+        out << arr[i].name << "|" << arr[i].watts << "|" << arr[i].hours << "\n";
+    }
+
+    out.close();
+    cout << "Saved to " << APPLIANCES_FILE << ".\n";
 }
 // --------------------------------
 
@@ -176,10 +192,10 @@ int main() {
             searchAppliances(appliances, count);
         }
         else if (choice == 4) {
-            cout << "[Part 5] Billing (coming in Part 8)\n";
+            cout << "[Part 6] Billing (coming in Part 8)\n";
         }
         else if (choice == 5) {
-            cout << "[Part 5] Save to file (coming in Part 6)\n";
+            saveAppliancesToFile(appliances, count);
         }
         else if (choice == 6) {
             cout << "Goodbye!\n";
