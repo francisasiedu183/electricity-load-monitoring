@@ -20,6 +20,17 @@ void flushInput() {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
+string trimText(const string& s) {
+    int start = 0;
+    int end = (int)s.size() - 1;
+
+    while (start <= end && (s[start] == ' ' || s[start] == '\t' || s[start] == '\r' || s[start] == '\n')) start++;
+    while (end >= start && (s[end] == ' ' || s[end] == '\t' || s[end] == '\r' || s[end] == '\n')) end--;
+
+    if (start > end) return "";
+    return s.substr(start, end - start + 1);
+}
+
 int getInt(const string& prompt) {
     int v;
     while (true) {
@@ -40,6 +51,17 @@ double getDouble(const string& prompt) {
     }
 }
 
+string getNonEmptyLine(const string& prompt) {
+    while (true) {
+        cout << prompt;
+        string s;
+        getline(cin, s);
+        s = trimText(s);
+        if (!s.empty()) return s;
+        cout << "Input must not be empty.\n";
+    }
+}
+
 void showMenu() {
     cout << "\n1. Register appliance\n";
     cout << "2. View appliances\n";
@@ -49,7 +71,7 @@ void showMenu() {
     cout << "6. Exit\n";
 }
 
-// -------- Part 2 additions --------
+// Part 2 calculations (still included)
 double kwhPerDay(const Appliance& a) {
     return (a.watts / 1000.0) * a.hours;
 }
@@ -59,11 +81,30 @@ double totalKwhPerDay(const Appliance arr[], int count) {
     for (int i = 0; i < count; i++) total += kwhPerDay(arr[i]);
     return total;
 }
-// ----------------------------------
+
+// -------- Part 3 addition --------
+void registerAppliance(Appliance arr[], int& count) {
+    if (count >= MAX_APPLIANCES) {
+        cout << "Limit reached.\n";
+        return;
+    }
+
+    Appliance a;
+    a.name = getNonEmptyLine("Name: ");
+
+    do { a.watts = getDouble("Watts (>0): "); } while (a.watts <= 0);
+    do { a.hours = getDouble("Hours/day (0-24): "); } while (a.hours < 0 || a.hours > 24);
+
+    arr[count] = a;
+    count++;
+
+    cout << "Appliance registered (in memory).\n";
+}
+// --------------------------------
 
 int main() {
     Appliance appliances[MAX_APPLIANCES];
-    int count = 0; // file loading comes later
+    int count = 0;
 
     cout << "Electrical Load Monitoring & Billing System\n";
     cout << "Loaded appliances: " << count << "\n";
@@ -73,19 +114,19 @@ int main() {
         int choice = getInt("Choose (1-6): ");
 
         if (choice == 1) {
-            cout << "[Part 2] Register appliance (coming in Part 3)\n";
+            registerAppliance(appliances, count);
         }
         else if (choice == 2) {
-            cout << "[Part 2] View appliances (coming in Part 4)\n";
+            cout << "[Part 3] View appliances (coming in Part 4)\n";
         }
         else if (choice == 3) {
-            cout << "[Part 2] Search appliance (coming in Part 5)\n";
+            cout << "[Part 3] Search appliance (coming in Part 5)\n";
         }
         else if (choice == 4) {
-            cout << "[Part 2] Billing (coming in Part 8)\n";
+            cout << "[Part 3] Billing (coming in Part 8)\n";
         }
         else if (choice == 5) {
-            cout << "[Part 2] Save to file (coming in Part 6)\n";
+            cout << "[Part 3] Save to file (coming in Part 6)\n";
         }
         else if (choice == 6) {
             cout << "Goodbye!\n";
