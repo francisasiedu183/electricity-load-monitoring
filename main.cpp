@@ -71,7 +71,6 @@ void showMenu() {
     cout << "6. Exit\n";
 }
 
-// Part 2 calculations (still included)
 double kwhPerDay(const Appliance& a) {
     return (a.watts / 1000.0) * a.hours;
 }
@@ -82,7 +81,6 @@ double totalKwhPerDay(const Appliance arr[], int count) {
     return total;
 }
 
-// -------- Part 3 addition --------
 void registerAppliance(Appliance arr[], int& count) {
     if (count >= MAX_APPLIANCES) {
         cout << "Limit reached.\n";
@@ -99,6 +97,31 @@ void registerAppliance(Appliance arr[], int& count) {
     count++;
 
     cout << "Appliance registered (in memory).\n";
+}
+
+// -------- Part 4 addition --------
+void viewAppliances(const Appliance arr[], int count) {
+    if (count == 0) {
+        cout << "No appliances.\n";
+        return;
+    }
+
+    cout << fixed << setprecision(2);
+    cout << left << setw(4)  << "#"
+         << setw(25) << "Name"
+         << setw(10) << "Watts"
+         << setw(10) << "Hours"
+         << setw(10) << "kWh/day"
+         << "\n";
+
+    for (int i = 0; i < count; i++) {
+        cout << left << setw(4)  << (i + 1)
+             << setw(25) << arr[i].name
+             << setw(10) << arr[i].watts
+             << setw(10) << arr[i].hours
+             << setw(10) << kwhPerDay(arr[i])
+             << "\n";
+    }
 }
 // --------------------------------
 
@@ -117,16 +140,16 @@ int main() {
             registerAppliance(appliances, count);
         }
         else if (choice == 2) {
-            cout << "[Part 3] View appliances (coming in Part 4)\n";
+            viewAppliances(appliances, count);
         }
         else if (choice == 3) {
-            cout << "[Part 3] Search appliance (coming in Part 5)\n";
+            cout << "[Part 4] Search appliance (coming in Part 5)\n";
         }
         else if (choice == 4) {
-            cout << "[Part 3] Billing (coming in Part 8)\n";
+            cout << "[Part 4] Billing (coming in Part 8)\n";
         }
         else if (choice == 5) {
-            cout << "[Part 3] Save to file (coming in Part 6)\n";
+            cout << "[Part 4] Save to file (coming in Part 6)\n";
         }
         else if (choice == 6) {
             cout << "Goodbye!\n";
