@@ -15,41 +15,31 @@ struct Appliance {
     double hours;
 };
 
-// Clears bad input + removes leftover characters
 void flushInput() {
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
-// Reads an integer safely
 int getInt(const string& prompt) {
     int v;
     while (true) {
         cout << prompt;
-        if (cin >> v) {
-            flushInput();
-            return v;
-        }
+        if (cin >> v) { flushInput(); return v; }
         cout << "Invalid number. Try again.\n";
         flushInput();
     }
 }
 
-// Reads a double safely
 double getDouble(const string& prompt) {
     double v;
     while (true) {
         cout << prompt;
-        if (cin >> v) {
-            flushInput();
-            return v;
-        }
+        if (cin >> v) { flushInput(); return v; }
         cout << "Invalid number. Try again.\n";
         flushInput();
     }
 }
 
-// Shows menu
 void showMenu() {
     cout << "\n1. Register appliance\n";
     cout << "2. View appliances\n";
@@ -59,28 +49,43 @@ void showMenu() {
     cout << "6. Exit\n";
 }
 
+// -------- Part 2 additions --------
+double kwhPerDay(const Appliance& a) {
+    return (a.watts / 1000.0) * a.hours;
+}
+
+double totalKwhPerDay(const Appliance arr[], int count) {
+    double total = 0.0;
+    for (int i = 0; i < count; i++) total += kwhPerDay(arr[i]);
+    return total;
+}
+// ----------------------------------
+
 int main() {
+    Appliance appliances[MAX_APPLIANCES];
+    int count = 0; // file loading comes later
+
     cout << "Electrical Load Monitoring & Billing System\n";
-    cout << "Loaded appliances: 0\n"; // file loading comes later
+    cout << "Loaded appliances: " << count << "\n";
 
     while (true) {
         showMenu();
         int choice = getInt("Choose (1-6): ");
 
         if (choice == 1) {
-            cout << "[Part 1] Register appliance (coming in Part 3)\n";
+            cout << "[Part 2] Register appliance (coming in Part 3)\n";
         }
         else if (choice == 2) {
-            cout << "[Part 1] View appliances (coming in Part 4)\n";
+            cout << "[Part 2] View appliances (coming in Part 4)\n";
         }
         else if (choice == 3) {
-            cout << "[Part 1] Search appliance (coming in Part 5)\n";
+            cout << "[Part 2] Search appliance (coming in Part 5)\n";
         }
         else if (choice == 4) {
-            cout << "[Part 1] Billing (coming in Part 8)\n";
+            cout << "[Part 2] Billing (coming in Part 8)\n";
         }
         else if (choice == 5) {
-            cout << "[Part 1] Save to file (coming in Part 6)\n";
+            cout << "[Part 2] Save to file (coming in Part 6)\n";
         }
         else if (choice == 6) {
             cout << "Goodbye!\n";
